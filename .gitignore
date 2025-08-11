@@ -1,0 +1,10 @@
+# secrets
+src/certs/
+*.pem
+.env
+.env.*.local
+
+src/certs/
+*.pem
+.env
+.env.*.local
