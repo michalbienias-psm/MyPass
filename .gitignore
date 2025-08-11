@@ -1,17 +1,14 @@
-# dependencies
+# deps
 node_modules/
 
-# build output
+# build
 dist/
 coverage/
 
-# secrets
-src/certs/
-*.pem
-.env
-.env.*.local
+# secrets anywhere
+**/*.pem
+**/.env
+**/.env.*.local
 
-# OS / editor junk
-.DS_Store
-Thumbs.db
-*.log
+# explicit quickstart cert dir
+passkit-node-quickstart/src/certs/
