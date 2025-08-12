@@ -13,6 +13,14 @@ app.get("/", (_req, res) =>
   res.type("text").send("PYA Members API is running. Use POST /members with X-API-Key.")
 );
 
+app.use((req, res, next) => {
+  if (req.path === "/" || req.path === "/healthz") return next();
+  const hasOidc = (req.header("authorization") || "").startsWith("Bearer ");
+  const keyOk = (req.header("x-api-key") || "") === process.env.API_KEY; // optional legacy path
+  if (!hasOidc && !keyOk) return res.status(401).json({ error: "Unauthorized" });
+  next();
+});
+
 // API key gate for everything else
 const REQUIRED_API_KEY = process.env.API_KEY;
 app.use((req, res, next) => {
