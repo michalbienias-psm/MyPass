@@ -7,6 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: true })); // if you know your Wix domain, set it explicitly
 
+app.get("/healthz", (_req, res) => res.status(200).send("ok"));
+app.get("/", (_req, res) =>
+  res.type("text").send("PYA Members API is running. Use POST /members with X-API-Key.")
+);
+
 // Simple API key check (Wix will send X-API-Key)
 const API_KEY = process.env.API_KEY;
 app.use((req, res, next) => {
