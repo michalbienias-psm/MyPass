@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 // Firestore client (uses Cloud Run SA)
-const db = new Firestore();
+const db = new Firestore({ databaseId: process.env.FIRESTORE_DB || "memberdb" });
 
 /**
  * POST /members
