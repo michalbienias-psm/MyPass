@@ -37,17 +37,30 @@ const db = new Firestore({ databaseId: process.env.FIRESTORE_DB || "memberdb" })
  * body: { firstName, lastName, email, tier? }
  * returns: { memberId, status }
  */
+// inside POST /members
 app.post("/members", async (req, res) => {
   try {
-    const { firstName, lastName, email, tier = "Member" } = req.body || {};
+    const { firstName, lastName, email, tier = "Member", address } = req.body || {};
     if (!firstName || !lastName || !email) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
+    // Require address: accept either a string or Velo Address object
+    const addrIsEmpty =
+      !address ||
+      (typeof address === "string" ? address.trim() === "" :
+        !address.formatted && !address.streetAddress);
+
+    if (addrIsEmpty) {
+      return res.status(400).json({ error: "Address required" });
+    }
+    const addressObj = typeof address === "string" ? { formatted: address } : address;
+
     const emailKey = String(email).trim().toLowerCase();
 
-    // Idempotency: dedupe by normalized email
-    const existing = await db.collection("members").where("emailKey", "==", emailKey).limit(1).get();
+    // Idempotent by email: return existing if present (no rewrite)
+    const existing = await db.collection("members")
+      .where("emailKey", "==", emailKey).limit(1).get();
     if (!existing.empty) {
       const doc = existing.docs[0];
       return res.json({ memberId: doc.id, status: doc.get("status") || "active" });
@@ -57,19 +70,18 @@ app.post("/members", async (req, res) => {
     const now = new Date();
     await db.collection("members").doc(memberId).set({
       memberId,
-      firstName,
-      lastName,
-      email,
+      firstName, lastName, email,
       emailKey,
       tier,
+      address: addressObj,                           // ← store address
+      addressText: addressObj.formatted || addressObj.streetAddress || null,
       status: "active",
-      createdAt: now,
-      updatedAt: now,
+      createdAt: now, updatedAt: now
     });
 
     return res.json({ memberId, status: "active" });
   } catch (err) {
-    console.error(err);
+    console.error("members error:", err);
     return res.status(500).json({ error: "Internal error" });
   }
 });
