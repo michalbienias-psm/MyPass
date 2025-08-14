@@ -1,4 +1,4 @@
-PYA Members — Kaggle Cleanup README
+PSM Members — Kaggle Cleanup README
 ===================================
 
 Why we did this
