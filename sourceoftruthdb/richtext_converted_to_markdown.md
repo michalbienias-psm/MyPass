@@ -138,28 +138,6 @@ What you get
 *   Shared emails no longer block ingestion: the same E-mail can map to multiple members.
     
 
-How to reproduce in Kaggle
---------------------------
-
-1.  Add the private dataset with your Wix export.
-    
-2.  Run notebook cells in order:
-    
-    *   Load & trim,
-        
-    *   Address sync,
-        
-    *   Counts,
-        
-    *   Duplicate email analysis,
-        
-    *   Person-key culling,
-        
-    *   Final export.
-        
-3.  Download source\_of\_truth.csv from the **Output** tab.
-    
-
 Next steps (GCP “source of truth”)
 ----------------------------------
 
@@ -186,17 +164,7 @@ Pick one:
 *   upserts one **member** per row,
     
 *   links the row’s E-mail to that member (append if the email already exists).
-    
-
-Operational notes
------------------
-
-*   **Privacy:** dataset stayed private; only /kaggle/working/source\_of\_truth.csv is produced.
-    
-*   **Auditability:** we kept deterministic rules (documented above). If needed, keep the intermediate reports (duplicate summaries) for review.
-    
-*   **Future signups:** on the new form/API, **store email lowercased** and **allow linking multiple members to one email**. Enforce person uniqueness by DOB+name (and/or school ID) server-side.
-    
+     
 
 Quick glossary
 --------------
@@ -212,13 +180,3 @@ Quick glossary
     *   otherwise (last\_norm, first\_norm) (weak).
         
 *   **strong key:** person\_key that includes DOB or a long phone; safer to auto-merge/cull.
-    
-
-Questions & tweaks
-------------------
-
-*   Want a stricter policy (e.g., never drop older DOB rows)? We can switch to **“flag for review”** instead of deleting.
-    
-*   Want a formal **review file** of conflict groups before export? We can emit review\_needed.csv alongside the final CSV.
-    
-*   Ready to ship to **Firestore/Postgres**? I’ll drop in a small importer and infra steps.
